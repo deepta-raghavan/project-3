@@ -1,16 +1,20 @@
 package cs1501_p3;
 
 
+
 import java.util.NoSuchElementException;
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 
 public class CarsPQ implements CarsPQ_Inter {
-    private Car[] pricepq = new Car[20];
-    private Car[] milepq = new Car[20];
+    private ArrayList<Car> pricepq = new ArrayList<>();
+    private ArrayList<Car> milepq = new ArrayList<>();
     private int psize = 0;
     private int msize = 0;
 
+    public CarsPQ(){
+
+    }
     public CarsPQ(String fileName) {
         try (Scanner s = new Scanner(new File(fileName))) {
             if (s.hasNextLine()) {
@@ -28,8 +32,6 @@ public class CarsPQ implements CarsPQ_Inter {
 
                     Car c = new Car(vin, make, model, price, mileage, color);
                     add(c);
-                    psize++;
-                    msize++;
                 }
             }
         } catch (IOException e) {
@@ -40,46 +42,26 @@ public class CarsPQ implements CarsPQ_Inter {
 
 
     public void add(Car c) throws IllegalStateException {
-        pricepq[++psize] = c;
-        milepq[++msize] = c;
-        int pcurrent = psize;
-        int mcurrent = msize;
+        pricepq.add(c);
+        milepq.add(c);
+        psize++;
+        msize++;
+        int k = psize-1;
+        int j = msize-1;
 
-        if(pricepq == null){
-            for(int i = 0; i< pricepq.length; i++){
-                pricepq[i] = c;
-            }
+        while (k > 1 && (pricepq.get(k/2).getPrice() > c.getPrice())){
+            pricepq.set(k, pricepq.get(k/2));
+            k /= 2;
         }
-        while(pricepq[pcurrent].getPrice() < pricepq[parent(pcurrent)].getPrice()){
-            pswap(pcurrent, parent(pcurrent));
-            pcurrent = parent(pcurrent);
+        pricepq.set(k, c);
+
+        while (j > 1 && (milepq.get(j/2).getMileage() > c.getMileage())){
+            milepq.set(j, milepq.get(j/2));
+            j /= 2;
         }
-
-        while(milepq[mcurrent].getMileage() < milepq[parent(mcurrent)].getMileage()){
-            mswap(mcurrent, parent(mcurrent));
-            mcurrent = parent(mcurrent);
-        }
+        milepq.set(j, c);
 
     }
-
-    private int parent(int pos){
-        return pos/2;
-    }
-
-    private void pswap(int fpos, int spos){
-        Car temp;
-        temp = pricepq[fpos];
-        pricepq[fpos] = pricepq[spos];
-        pricepq[spos] = temp;
-    }
-
-    private void mswap(int fpos, int spos){
-        Car temp;
-        temp = milepq[fpos];
-        milepq[fpos] = milepq[spos];
-        milepq[spos] = temp;
-    }
-
 
     public Car get(String vin) throws NoSuchElementException {
         for (Car x : pricepq) {
@@ -122,37 +104,120 @@ public class CarsPQ implements CarsPQ_Inter {
 
 
     public void remove(String vin) throws NoSuchElementException {
-        int track = 0;
+
+        int ptrack = 0;
         for (Car x : pricepq) {
             if (x.getVIN().equals(vin)) {
-                //pq.remove(track);
+                pricepq.remove(ptrack);
             }
-            track++;
+            ptrack++;
         }
+        pheapify(pricepq, 0);
+        psize--;
+
+        int mtrack = 0;
+        for (Car y : milepq) {
+            if (y.getVIN().equals(vin)) {
+                milepq.remove(mtrack);
+            }
+            mtrack++;
+        }
+        mheapify(milepq, 0);
+        msize--;
+
         throw new NoSuchElementException("There is no car with that VIN in the PQ");
 
     }
 
-    @Override
+    private void pheapify(ArrayList<Car> pq, int vroot)
+    {
+        Car c = pq.get(vroot);
+        int child, k = vroot;
+        while (2*k <= psize)
+        {
+            child = 2*k;
+            if (child < psize && (pq.get(child).getPrice() > pq.get(child+1).getPrice()))
+            {
+                child++;
+            }
+            if (c.getPrice() <= pq.get(child).getPrice())
+            {
+                break;
+            }
+            else
+            {
+                pq.set(k, pq.get(child));
+                k = child;
+            }
+        }
+        pq.set(k, c);
+    }
+
+    private void mheapify(ArrayList<Car> pq, int vroot)
+    {
+        Car c = pq.get(vroot);
+        int child, k = vroot;
+        while (2*k <= msize)
+        {
+            child = 2*k;
+            if (child < msize && (pq.get(child).getMileage() > pq.get(child+1).getMileage()))
+            {
+                child++;
+            }
+            if (c.getMileage() <= pq.get(child).getMileage())
+            {
+                break;
+            }
+            else
+            {
+                pq.set(k, pq.get(child));
+                k = child;
+            }
+        }
+        pq.set(k, c);
+    }
+
+
     public Car getLowPrice() {
-        return null;
-        /*for(int i = 0; i < pq.length; i++){
-            pq[i]
-        }*/
+        return pricepq.get(0);
     }
 
-    @Override
+
     public Car getLowPrice(String make, String model) {
-        return null;
+        ArrayList<Car> specific = new ArrayList<>();
+        for(Car x:pricepq){
+            if(x.getMake().equals(make) && x.getModel().equals(model)){
+                specific.add(x);
+            }
+        }
+        Car min = specific.get(0);
+        for(int i = 0; i<specific.size(); i++){
+            if(specific.get(i).getPrice() < min.getPrice()){
+                min = specific.get(i);
+            }
+        }
+        return min;
     }
 
-    @Override
+
     public Car getLowMileage() {
-        return null;
+        return milepq.get(0);
     }
 
-    @Override
+
     public Car getLowMileage(String make, String model) {
-        return null;
+        ArrayList<Car> specific = new ArrayList<>();
+        for(Car x:milepq){
+            if(x.getMake().equals(make) && x.getModel().equals(model)){
+                specific.add(x);
+            }
+        }
+        Car min = specific.get(0);
+        for(int i = 0; i<specific.size(); i++){
+            if(specific.get(i).getMileage() < min.getMileage()){
+                min = specific.get(i);
+            }
+        }
+        return min;
     }
 }
