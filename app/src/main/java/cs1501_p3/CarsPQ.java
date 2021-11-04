@@ -9,6 +9,8 @@ import java.util.*;
 public class CarsPQ implements CarsPQ_Inter {
     private ArrayList<Car> pricepq = new ArrayList<>();
     private ArrayList<Car> milepq = new ArrayList<>();
+    private Car pmin;
+    private Car mmin;
     private int psize = 0;
     private int msize = 0;
 
@@ -112,7 +114,8 @@ public class CarsPQ implements CarsPQ_Inter {
             }
             ptrack++;
         }
-        pheapify(pricepq, 0);
+
+        pheapify(pricepq, pricepq.indexOf(pmin));
         psize--;
 
         int mtrack = 0;
@@ -122,7 +125,7 @@ public class CarsPQ implements CarsPQ_Inter {
             }
             mtrack++;
         }
-        mheapify(milepq, 0);
+        mheapify(milepq, milepq.indexOf(mmin));
         msize--;
 
         throw new NoSuchElementException("There is no car with that VIN in the PQ");
@@ -179,7 +182,13 @@ public class CarsPQ implements CarsPQ_Inter {
 
 
     public Car getLowPrice() {
-        return pricepq.get(0);
+        pmin = pricepq.get(0);
+        for(int i = 0; i<pricepq.size(); i++){
+            if(pricepq.get(i).getPrice() < pmin.getPrice()){
+                pmin = pricepq.get(i);
+            }
+        }
+        return pmin;
     }
 
 
@@ -190,18 +199,24 @@ public class CarsPQ implements CarsPQ_Inter {
                 specific.add(x);
             }
         }
-        Car min = specific.get(0);
+        Car s = specific.get(0);
         for(int i = 0; i<specific.size(); i++){
-            if(specific.get(i).getPrice() < min.getPrice()){
-                min = specific.get(i);
+            if(specific.get(i).getPrice() < s.getPrice()){
+                s = specific.get(i);
             }
         }
-        return min;
+        return s;
     }
 
 
     public Car getLowMileage() {
-        return milepq.get(0);
+        mmin = milepq.get(0);
+        for(int i = 0; i<milepq.size(); i++){
+            if(milepq.get(i).getMileage() < mmin.getMileage()){
+                mmin = milepq.get(i);
+            }
+        }
+        return mmin;
     }
 
 
