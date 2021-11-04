@@ -110,6 +110,12 @@ public class CarsPQ implements CarsPQ_Inter {
 
     public void remove(String vin) throws NoSuchElementException {
 
+        for (Car d : pricepq) {
+            if (!d.getVIN().equals(vin)) {
+                throw new NoSuchElementException("There is no car with that VIN in the PQ");
+            }
+        }
+
         int ptrack = 0;
         for (Car x : pricepq) {
             if (x.getVIN().equals(vin)) {
@@ -130,8 +136,6 @@ public class CarsPQ implements CarsPQ_Inter {
         }
         mheapify(milepq, milepq.indexOf(mmin));
         msize--;
-
-        throw new NoSuchElementException("There is no car with that VIN in the PQ");
 
     }
 
