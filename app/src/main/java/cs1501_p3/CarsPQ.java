@@ -1,7 +1,6 @@
 package cs1501_p3;
 
 
-
 import java.util.NoSuchElementException;
 import java.io.*;
 import java.util.*;
@@ -14,9 +13,10 @@ public class CarsPQ implements CarsPQ_Inter {
     private int psize = 0;
     private int msize = 0;
 
-    public CarsPQ(){
+    public CarsPQ() {
 
     }
+
     public CarsPQ(String fileName) {
         try (Scanner s = new Scanner(new File(fileName))) {
             if (s.hasNextLine()) {
@@ -48,17 +48,17 @@ public class CarsPQ implements CarsPQ_Inter {
         milepq.add(c);
         psize++;
         msize++;
-        int k = psize-1;
-        int j = msize-1;
+        int k = psize - 1;
+        int j = msize - 1;
 
-        while (k > 1 && (pricepq.get(k/2).getPrice() > c.getPrice())){
-            pricepq.set(k, pricepq.get(k/2));
+        while (k > 1 && (pricepq.get(k / 2).getPrice() > c.getPrice())) {
+            pricepq.set(k, pricepq.get(k / 2));
             k /= 2;
         }
         pricepq.set(k, c);
 
-        while (j > 1 && (milepq.get(j/2).getMileage() > c.getMileage())){
-            milepq.set(j, milepq.get(j/2));
+        while (j > 1 && (milepq.get(j / 2).getMileage() > c.getMileage())) {
+            milepq.set(j, milepq.get(j / 2));
             j /= 2;
         }
         milepq.set(j, c);
@@ -79,6 +79,7 @@ public class CarsPQ implements CarsPQ_Inter {
         for (Car x : pricepq) {
             if (x.getVIN().equals(vin)) {
                 x.setPrice(newPrice);
+                return;
             }
         }
         throw new NoSuchElementException("There is no car with that VIN in the PQ");
@@ -89,6 +90,7 @@ public class CarsPQ implements CarsPQ_Inter {
         for (Car x : milepq) {
             if (x.getVIN().equals(vin)) {
                 x.setMileage(newMileage);
+                return;
             }
         }
         throw new NoSuchElementException("There is no car with that VIN in the PQ");
@@ -99,6 +101,7 @@ public class CarsPQ implements CarsPQ_Inter {
         for (Car x : pricepq) {
             if (x.getVIN().equals(vin)) {
                 x.setColor(newColor);
+                return;
             }
         }
         throw new NoSuchElementException("There is no car with that VIN in the PQ");
@@ -132,23 +135,17 @@ public class CarsPQ implements CarsPQ_Inter {
 
     }
 
-    private void pheapify(ArrayList<Car> pq, int vroot)
-    {
+    private void pheapify(ArrayList<Car> pq, int vroot) {
         Car c = pq.get(vroot);
         int child, k = vroot;
-        while (2*k <= psize)
-        {
-            child = 2*k;
-            if (child < psize && (pq.get(child).getPrice() > pq.get(child+1).getPrice()))
-            {
+        while (2 * k <= psize) {
+            child = 2 * k;
+            if (child < psize && (pq.get(child).getPrice() > pq.get(child + 1).getPrice())) {
                 child++;
             }
-            if (c.getPrice() <= pq.get(child).getPrice())
-            {
+            if (c.getPrice() <= pq.get(child).getPrice()) {
                 break;
-            }
-            else
-            {
+            } else {
                 pq.set(k, pq.get(child));
                 k = child;
             }
@@ -156,23 +153,17 @@ public class CarsPQ implements CarsPQ_Inter {
         pq.set(k, c);
     }
 
-    private void mheapify(ArrayList<Car> pq, int vroot)
-    {
+    private void mheapify(ArrayList<Car> pq, int vroot) {
         Car c = pq.get(vroot);
         int child, k = vroot;
-        while (2*k <= msize)
-        {
-            child = 2*k;
-            if (child < msize && (pq.get(child).getMileage() > pq.get(child+1).getMileage()))
-            {
+        while (2 * k <= msize) {
+            child = 2 * k;
+            if (child < msize && (pq.get(child).getMileage() > pq.get(child + 1).getMileage())) {
                 child++;
             }
-            if (c.getMileage() <= pq.get(child).getMileage())
-            {
+            if (c.getMileage() <= pq.get(child).getMileage()) {
                 break;
-            }
-            else
-            {
+            } else {
                 pq.set(k, pq.get(child));
                 k = child;
             }
@@ -183,8 +174,8 @@ public class CarsPQ implements CarsPQ_Inter {
 
     public Car getLowPrice() {
         pmin = pricepq.get(0);
-        for(int i = 0; i<pricepq.size(); i++){
-            if(pricepq.get(i).getPrice() < pmin.getPrice()){
+        for (int i = 0; i < pricepq.size(); i++) {
+            if (pricepq.get(i).getPrice() < pmin.getPrice()) {
                 pmin = pricepq.get(i);
             }
         }
@@ -194,14 +185,14 @@ public class CarsPQ implements CarsPQ_Inter {
 
     public Car getLowPrice(String make, String model) {
         ArrayList<Car> specific = new ArrayList<>();
-        for(Car x:pricepq){
-            if(x.getMake().equals(make) && x.getModel().equals(model)){
+        for (Car x : pricepq) {
+            if (x.getMake().equals(make) && x.getModel().equals(model)) {
                 specific.add(x);
             }
         }
         Car s = specific.get(0);
-        for(int i = 0; i<specific.size(); i++){
-            if(specific.get(i).getPrice() < s.getPrice()){
+        for (int i = 0; i < specific.size(); i++) {
+            if (specific.get(i).getPrice() < s.getPrice()) {
                 s = specific.get(i);
             }
         }
@@ -211,8 +202,8 @@ public class CarsPQ implements CarsPQ_Inter {
 
     public Car getLowMileage() {
         mmin = milepq.get(0);
-        for(int i = 0; i<milepq.size(); i++){
-            if(milepq.get(i).getMileage() < mmin.getMileage()){
+        for (int i = 0; i < milepq.size(); i++) {
+            if (milepq.get(i).getMileage() < mmin.getMileage()) {
                 mmin = milepq.get(i);
             }
         }
@@ -222,14 +213,14 @@ public class CarsPQ implements CarsPQ_Inter {
 
     public Car getLowMileage(String make, String model) {
         ArrayList<Car> specific = new ArrayList<>();
-        for(Car x:milepq){
-            if(x.getMake().equals(make) && x.getModel().equals(model)){
+        for (Car x : milepq) {
+            if (x.getMake().equals(make) && x.getModel().equals(model)) {
                 specific.add(x);
             }
         }
         Car min = specific.get(0);
-        for(int i = 0; i<specific.size(); i++){
-            if(specific.get(i).getMileage() < min.getMileage()){
+        for (int i = 0; i < specific.size(); i++) {
+            if (specific.get(i).getMileage() < min.getMileage()) {
                 min = specific.get(i);
             }
         }
